@@ -1,5 +1,5 @@
-import React from 'react';
-import { ArrowLeft, Edit3 } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, Edit3, Trash2 } from 'lucide-react';
 import { DollItem, ItemStatus } from '../types';
 import { formatCurrency } from '../utils/formatters';
 
@@ -7,6 +7,7 @@ interface ItemDetailPageProps {
   item: DollItem;
   onBack: () => void;
   onEdit: (item: DollItem) => void;
+  onDelete?: (itemId: string) => void;
 }
 
 const STATUS_TEXT: Record<ItemStatus, string> = {
@@ -20,8 +21,10 @@ export const ItemDetailPage: React.FC<ItemDetailPageProps> = ({
   item,
   onBack,
   onEdit,
+  onDelete,
 }) => {
-  const [isViewingFullImage, setIsViewingFullImage] = React.useState(false);
+  const [isViewingFullImage, setIsViewingFullImage] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   return (
     <div className="space-y-4 max-w-md mx-auto pb-12 animate-fade-in">
@@ -252,9 +255,19 @@ export const ItemDetailPage: React.FC<ItemDetailPageProps> = ({
           </div>
         )}
 
-        {/* 页面下方：只放一个编辑信息按钮 */}
-        <div className="pt-4 border-t border-[var(--theme-border)]/50 flex justify-end">
+        {/* 页面下方：编辑信息按钮的左边放删除娃物按钮 */}
+        <div className="pt-4 border-t border-[var(--theme-border)]/50 flex items-center justify-between gap-3">
           <button
+            type="button"
+            onClick={() => setIsDeleteModalOpen(true)}
+            className="px-4 py-2.5 text-sm font-medium text-[#B85D50] hover:text-[#9C4336] bg-[#FAF0EE] hover:bg-[#F6E5E2] border border-[#EACEC8] active:scale-[0.98] rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>删除娃物</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => onEdit(item)}
             className="px-6 py-2.5 text-sm font-semibold text-white bg-[var(--theme-primary)] hover:bg-[var(--theme-primary-hover)] active:scale-[0.98] rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer"
           >
@@ -263,6 +276,64 @@ export const ItemDetailPage: React.FC<ItemDetailPageProps> = ({
           </button>
         </div>
       </div>
+
+      {/* 二次确认删除弹窗 */}
+      {isDeleteModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
+          onClick={() => setIsDeleteModalOpen(false)}
+        >
+          <div 
+            className="w-full max-w-sm rounded-3xl glass-panel p-5 shadow-2xl border border-white/80 text-[var(--theme-text)] space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2.5 text-[#B85D50]">
+              <div className="p-2 rounded-xl bg-[#FAF0EE] shrink-0">
+                <Trash2 className="w-5 h-5 text-[#B85D50]" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-[var(--theme-text)]">
+                  确认删除该娃物？
+                </h3>
+                <p className="text-xs text-[var(--theme-text-muted)] mt-0.5">
+                  删除后将同时清除相关娃物档案及所有账本收支记录，操作不可撤销。
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-white/70 border border-[var(--theme-border)]/50 text-xs space-y-1">
+              <div className="font-semibold text-[var(--theme-text)] truncate">
+                {item.name}
+              </div>
+              <div className="text-[11px] text-[var(--theme-text-muted)]">
+                标签：{item.tag} · 状态：{STATUS_TEXT[item.status]}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 pt-2 border-t border-[var(--theme-border)]/50">
+              <button
+                type="button"
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="w-full py-2.5 text-xs font-medium text-[var(--theme-text)] bg-white/80 hover:bg-white border border-[var(--theme-border)] rounded-xl transition-all cursor-pointer"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDeleteModalOpen(false);
+                  if (onDelete) {
+                    onDelete(item.id);
+                  }
+                }}
+                className="w-full py-2.5 text-xs font-semibold text-white bg-[#B85D50] hover:bg-[#A34B3F] rounded-xl shadow-xs transition-all cursor-pointer"
+              >
+                确认删除
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

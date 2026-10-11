@@ -151,6 +151,7 @@ export default function App() {
             item={currentItem}
             onBack={handleBackToList}
             onEdit={handleEditFromDetail}
+            onDelete={handleDeleteItem}
           />
         )}
 
@@ -197,14 +198,15 @@ export default function App() {
       </main>
 
       {/* 
-        手机端右下角悬浮按钮：纯圆形、无文字，恢复之前好看的SVG笔图标
+        手机端右下角悬浮按钮：纯圆形、无文字，精致手账笔SVG图标
       */}
       {viewMode === 'list' && (
         <button
           onClick={handleOpenCreate}
-          className="fixed bottom-6 right-5 z-40 w-12 h-12 rounded-full bg-[var(--theme-primary)] hover:bg-[var(--theme-primary-hover)] text-white shadow-xl shadow-black/25 flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
+          className="fixed bottom-6 right-5 z-40 w-12 h-12 rounded-full bg-[var(--theme-primary)] hover:bg-[var(--theme-primary-hover)] text-white shadow-xl shadow-black/20 flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
           title="记一笔"
         >
+          {/* 恢复之前用户喜爱的经典手账笔SVG图标 */}
           <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 18.5l-4 1 1-4L16.5 3.5z" />
             <path d="M14.5 5.5l3 3" />
