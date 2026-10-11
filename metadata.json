@@ -1,0 +1,6 @@
+{
+  "name": "娃柜与手账 - BJD娃物陈列与收支账本",
+  "description": "专为BJD爱好者定制的虚拟娃柜陈列与双模收支记账系统，支持全款与定尾支付、回血管理及待付尾款提醒。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
