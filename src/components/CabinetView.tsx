@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Tag as TagIcon, Plus, X, RotateCcw, Check } from 'lucide-react';
+import { Search, Tag as TagIcon, Plus, X } from 'lucide-react';
 import { DollItem, ItemStatus } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { getStoredTags, saveStoredTags } from '../utils/storage';
@@ -19,7 +19,6 @@ const STATUS_OPTIONS: { value: ItemStatus; label: string }[] = [
 
 export const CabinetView: React.FC<CabinetViewProps> = ({
   items,
-  onOpenCreate,
   onSelectItem,
 }) => {
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -104,22 +103,22 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
         当有进行tag筛选的时候变色，没有的时候恢复默认色
       */}
       <div className="relative flex items-center">
-        <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-[#7A8E7E]" />
+        <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-[var(--theme-text-muted)]" />
         <input
           type="text"
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
           placeholder="搜索娃物名称..."
-          className="w-full pl-8 pr-10 py-2 rounded-xl text-xs glass-input text-[#2D3A32]"
+          className="w-full pl-8 pr-10 py-2 rounded-xl text-xs glass-input text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)]"
         />
 
         {/* 搜索框最右边的SVG图标：点击打开Tag筛选弹窗 */}
         <button
           onClick={handleOpenTagModal}
-          className={`absolute right-2 top-1.5 p-1 rounded-lg transition-colors ${
+          className={`absolute right-2 top-1.5 p-1 rounded-lg transition-colors cursor-pointer ${
             activeTag !== 'all'
-              ? 'text-[#5B7360] bg-[#EAF1EC] ring-1 ring-[#5B7360]/40'
-              : 'text-[#7A8E7E] hover:text-[#2D3A32]'
+              ? 'text-[var(--theme-primary)] bg-[var(--theme-primary-light)] ring-1 ring-[var(--theme-primary)]/40'
+              : 'text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]'
           }`}
           title={activeTag !== 'all' ? `已筛选Tag: ${activeTag}` : '选择Tag筛选'}
         >
@@ -137,10 +136,10 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
             <button
               key={st.value}
               onClick={() => setStatusFilter(isSelected ? 'all' : st.value)}
-              className={`py-1.5 px-1 rounded-xl text-xs text-center font-medium transition-all truncate ${
+              className={`py-1.5 px-1 rounded-xl text-xs text-center font-medium transition-all truncate cursor-pointer ${
                 isSelected
-                  ? 'bg-[#5B7360] text-white shadow-2xs font-semibold'
-                  : 'bg-white/80 text-[#3D4F42] border border-[#CBD7CE] hover:bg-white'
+                  ? 'bg-[var(--theme-primary)] text-white shadow-2xs font-semibold'
+                  : 'bg-white/80 text-[var(--theme-text)] border border-[var(--theme-border)] hover:bg-white'
               }`}
             >
               {st.label}
@@ -151,11 +150,11 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
 
       {/* 如果当前有 Tag 筛选，展示一个小提示并允许直接清除 */}
       {activeTag !== 'all' && (
-        <div className="flex items-center justify-between px-2.5 py-1 rounded-lg bg-[#EAF1EC] border border-[#BDCEBF] text-[11px] text-[#3D5645]">
+        <div className="flex items-center justify-between px-2.5 py-1 rounded-lg bg-[var(--theme-primary-light)] border border-[var(--theme-border)] text-[11px] text-[var(--theme-text)]">
           <span>已筛选 Tag: <strong>{activeTag}</strong></span>
           <button
             onClick={() => setActiveTag('all')}
-            className="text-[10px] text-[#5B7360] hover:underline flex items-center gap-0.5"
+            className="text-[10px] text-[var(--theme-primary)] hover:underline flex items-center gap-0.5 cursor-pointer"
           >
             <X className="w-3 h-3" />
             清除筛选
@@ -165,7 +164,7 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
 
       {/* 娃物陈列网格：严格一行3个 (grid-cols-3)，完美适配手机端 */}
       {filteredItems.length === 0 ? (
-        <div className="text-center py-16 rounded-2xl bg-white/50 text-[#7A8E7E] text-xs space-y-2">
+        <div className="text-center py-16 rounded-2xl bg-white/50 text-[var(--theme-text-muted)] text-xs space-y-2">
           <p>暂无符合筛选条件的娃物</p>
           {(statusFilter !== 'all' || activeTag !== 'all' || searchKeyword) && (
             <button
@@ -174,7 +173,7 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
                 setActiveTag('all');
                 setSearchKeyword('');
               }}
-              className="text-xs text-[#5B7360] font-medium underline"
+              className="text-xs text-[var(--theme-primary)] font-medium underline cursor-pointer"
             >
               重置所有筛选
             </button>
@@ -201,13 +200,13 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
               {/* 仅显示名字与娃柜价格 */}
               <div className="p-1.5 flex flex-col justify-between gap-0.5">
                 <div 
-                  className="text-xs font-medium text-[#2D3A32] truncate"
+                  className="text-xs font-medium text-[var(--theme-text)] truncate"
                   title={item.name}
                 >
                   {item.name}
                 </div>
 
-                <div className="font-mono text-[11px] font-semibold text-[#3D5645] tabular-nums truncate">
+                <div className="font-mono text-[11px] font-semibold text-[var(--theme-primary)] tabular-nums truncate">
                   {item.cabinetPrice !== null ? formatCurrency(item.cabinetPrice) : '¥ 0.00'}
                 </div>
               </div>
@@ -224,16 +223,16 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
       {isTagModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
           <div 
-            className="w-full max-w-sm rounded-3xl glass-panel p-5 shadow-2xl border border-white/80 text-[#2D3A32] space-y-4"
+            className="w-full max-w-sm rounded-3xl glass-panel p-5 shadow-2xl border border-white/80 text-[var(--theme-text)] space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#CBD7CE]/50 pb-2.5">
-              <h3 className="text-sm font-serif-sc font-bold text-[#2D3A32]">
+            <div className="flex items-center justify-between border-b border-[var(--theme-border)]/50 pb-2.5">
+              <h3 className="text-sm font-serif-sc font-bold text-[var(--theme-text)]">
                 选择物品 Tag 筛选
               </h3>
               <button
                 onClick={() => setIsTagModalOpen(false)}
-                className="p-1 text-[#7A8E7E] hover:text-[#2D3A32] rounded-full hover:bg-black/5"
+                className="p-1 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] rounded-full hover:bg-black/5"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -246,10 +245,10 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
                   key={t}
                   type="button"
                   onClick={() => setTempTag(tempTag === t ? 'all' : t)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-xl transition-all ${
+                  className={`px-3 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer ${
                     tempTag === t
-                      ? 'bg-[#5B7360] text-white shadow-2xs font-semibold'
-                      : 'bg-white/80 text-[#4A5D4F] border border-[#CBD7CE] hover:bg-white'
+                      ? 'bg-[var(--theme-primary)] text-white shadow-2xs font-semibold'
+                      : 'bg-white/80 text-[var(--theme-text)] border border-[var(--theme-border)] hover:bg-white'
                   }`}
                 >
                   {t}
@@ -263,7 +262,7 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
               <button
                 type="button"
                 onClick={() => setIsAddingTag(!isAddingTag)}
-                className="px-2.5 py-1.5 rounded-xl border border-dashed border-[#5B7360] text-[#5B7360] hover:bg-[#EAF1EC] text-xs font-medium flex items-center gap-1 transition-colors"
+                className="px-2.5 py-1.5 rounded-xl border border-dashed border-[var(--theme-primary)] text-[var(--theme-primary)] hover:bg-[var(--theme-primary-light)] text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer"
                 title="新建自定义Tag"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -281,11 +280,11 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
                   value={newTagInput}
                   onChange={(e) => setNewTagInput(e.target.value)}
                   placeholder="输入新 Tag 名称..."
-                  className="flex-1 px-3 py-1.5 text-xs glass-input rounded-xl text-[#2D3A32]"
+                  className="flex-1 px-3 py-1.5 text-xs glass-input rounded-xl text-[var(--theme-text)]"
                 />
                 <button
                   type="submit"
-                  className="px-3 py-1.5 text-xs font-medium bg-[#5B7360] text-white rounded-xl shrink-0"
+                  className="px-3 py-1.5 text-xs font-medium bg-[var(--theme-primary)] text-white rounded-xl shrink-0 cursor-pointer"
                 >
                   添加
                 </button>
@@ -293,18 +292,18 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
             )}
 
             {/* 弹窗底部：重置与确定两个按钮并列 */}
-            <div className="grid grid-cols-2 gap-2.5 pt-3 border-t border-[#CBD7CE]/50">
+            <div className="grid grid-cols-2 gap-2.5 pt-3 border-t border-[var(--theme-border)]/50">
               <button
                 type="button"
                 onClick={handleResetTagModal}
-                className="w-full py-2 text-xs font-medium text-[#5B7360] bg-white/70 hover:bg-white border border-[#CBD7CE] rounded-xl transition-colors"
+                className="w-full py-2 text-xs font-medium text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] bg-white/70 hover:bg-white border border-[var(--theme-border)] rounded-xl transition-colors cursor-pointer"
               >
                 重置
               </button>
               <button
                 type="button"
                 onClick={handleConfirmTagModal}
-                className="w-full py-2 text-xs font-semibold text-white bg-[#5B7360] hover:bg-[#4D6352] rounded-xl shadow-xs transition-colors"
+                className="w-full py-2 text-xs font-semibold text-white bg-[var(--theme-primary)] hover:bg-[var(--theme-primary-hover)] rounded-xl shadow-xs transition-colors cursor-pointer"
               >
                 确定
               </button>

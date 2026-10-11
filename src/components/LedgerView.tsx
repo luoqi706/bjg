@@ -11,7 +11,8 @@ interface LedgerViewProps {
 }
 
 // 辅助函数：获取Tag对应简写单字
-function getTagChar(tag: string): string {
+function getTagChar(rawTag: string): string {
+  const tag = (rawTag || '').replace(/^BJD\s*[\/\-]\s*/i, '');
   if (!tag) return '娃';
   if (tag.includes('假发') || tag.includes('毛')) return '假';
   if (tag.includes('妆')) return '约';
@@ -248,30 +249,48 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
 
                   const linkedItem = items.find((i) => i.id === entry.itemId);
 
+                  const cleanTag = (entry.itemTag || '').replace(/^BJD\s*[\/\-]\s*/i, '');
+
                   return (
                     <div
                       key={entry.id}
                       onClick={() => linkedItem && onSelectItem(linkedItem)}
                       className="w-full rounded-2xl bg-white/85 hover:bg-white border border-white/70 shadow-2xs p-3 flex items-center justify-between gap-3 cursor-pointer transition-all active:scale-[0.99]"
                     >
-                      {/* 左侧：单字图标框 + 名字 + BJD / Tag */}
+                      {/* 左侧：支出/回血/尾款 3个不同的SVG图标 + 名字 + 仅显示Tag */}
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div 
-                          className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-bold text-xs"
+                          className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
+                          title={isResale ? '回血' : isPending ? '待付尾款' : '支出'}
                           style={{
-                            background: isResale ? '#FAF0EE' : isPending ? '#EDF3F7' : '#FDF2F0',
-                            color: isResale ? '#B86B53' : isPending ? '#5B798E' : '#D47D93',
+                            background: isResale ? '#FAF0EE' : isPending ? '#EDF3F7' : '#EAF1EC',
+                            color: isResale ? '#B86B53' : isPending ? '#5B798E' : '#4E6E58',
                           }}
                         >
-                          {getTagChar(entry.itemTag)}
+                          {isResale ? (
+                            <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="7" y1="17" x2="17" y2="7" />
+                              <polyline points="7 7 17 7 17 17" />
+                            </svg>
+                          ) : isPending ? (
+                            <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="9" />
+                              <polyline points="12 7 12 12 15 14" />
+                            </svg>
+                          ) : (
+                            <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="7" y1="7" x2="17" y2="17" />
+                              <polyline points="17 7 17 17 7 17" />
+                            </svg>
+                          )}
                         </div>
 
                         <div className="min-w-0">
-                          <div className="text-xs font-semibold text-[#2D3A32] truncate">
+                          <div className="text-xs font-semibold text-[var(--theme-text)] truncate">
                             {entry.itemName}
                           </div>
-                          <div className="text-[10px] text-[#8C9E91] truncate mt-0.5">
-                            BJD / {entry.itemTag}
+                          <div className="text-[10px] text-[var(--theme-text-muted)] truncate mt-0.5">
+                            {cleanTag}
                           </div>
                         </div>
                       </div>

@@ -12,7 +12,9 @@ import { LedgerView } from './components/LedgerView';
 import { ItemDetailPage } from './components/ItemDetailPage';
 import { ItemFormPage } from './components/ItemFormPage';
 import { BackupModal } from './components/BackupModal';
-import { Check, Edit3 } from 'lucide-react';
+import { ThemeModal } from './components/ThemeModal';
+import { THEME_PRESETS, getStoredThemeId, applyThemeToDOM, MorandiTheme } from './utils/theme';
+import { Check } from 'lucide-react';
 
 export default function App() {
   const [items, setItems] = useState<DollItem[]>([]);
@@ -23,7 +25,14 @@ export default function App() {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // 主题配色状态
+  const [currentTheme, setCurrentTheme] = useState<MorandiTheme>(() => {
+    const savedId = getStoredThemeId();
+    return THEME_PRESETS.find((t) => t.id === savedId) || THEME_PRESETS[0];
+  });
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -32,10 +41,11 @@ export default function App() {
     }, 2800);
   };
 
-  // 初始化加载数据
+  // 初始化加载数据与应用莫兰迪UI主题
   useEffect(() => {
     const loaded = getStoredItems();
     setItems(loaded);
+    applyThemeToDOM(currentTheme);
   }, []);
 
   const currentItem = items.find((i) => i.id === selectedItemId) || null;
@@ -113,9 +123,16 @@ export default function App() {
     showToast(`成功导入 ${newItems.length} 件娃物数据`);
   };
 
+  // 应用并更新主题
+  const handleApplyTheme = (theme: MorandiTheme) => {
+    setCurrentTheme(theme);
+    applyThemeToDOM(theme);
+    showToast(`已应用「${theme.name}」色调`);
+  };
+
   return (
-    <div className="min-h-screen bg-[#F3F6F3] text-[#2D3A32] flex flex-col justify-between">
-      {/* 顶部简明导航栏：娃物、账本、备份 */}
+    <div className="min-h-screen text-[var(--theme-text)] flex flex-col justify-between" style={{ backgroundColor: 'var(--theme-bg)' }}>
+      {/* 顶部简明导航栏：娃物、账本、备份 + 最右侧自定义UI颜色SVG图标 */}
       <Navbar
         currentTab={activeTab}
         onSelectTab={(tab) => {
@@ -123,11 +140,12 @@ export default function App() {
           setViewMode('list');
         }}
         onOpenBackup={() => setIsBackupModalOpen(true)}
+        onOpenTheme={() => setIsThemeModalOpen(true)}
       />
 
-      {/* 手机端主体容器 (以手机端为主，居中且宽度适度) */}
+      {/* 手机端主体容器 */}
       <main className="flex-1 max-w-md w-full mx-auto px-4 py-4">
-        {/* 1. 详情新页面 (全页面展示，左上角返回按键，底部仅编辑按钮) */}
+        {/* 1. 详情新页面 */}
         {viewMode === 'detail' && currentItem && (
           <ItemDetailPage
             item={currentItem}
@@ -136,7 +154,7 @@ export default function App() {
           />
         )}
 
-        {/* 2. 编辑页面 (单个界面完成全部信息修改，同一行对应金额与时间) */}
+        {/* 2. 编辑页面 */}
         {viewMode === 'edit' && currentItem && (
           <ItemFormPage
             initialItem={currentItem}
@@ -146,7 +164,7 @@ export default function App() {
           />
         )}
 
-        {/* 3. 创建新娃物页面 (同一行对应金额与时间) */}
+        {/* 3. 创建新娃物页面 */}
         {viewMode === 'create' && (
           <ItemFormPage
             initialItem={null}
@@ -178,16 +196,30 @@ export default function App() {
         )}
       </main>
 
-      {/* 手机端右下角悬浮「记一笔」快捷按钮 (参考截图右下角胶囊悬浮键) */}
+      {/* 
+        手机端右下角悬浮按钮：纯圆形、无文字，恢复之前好看的SVG笔图标
+      */}
       {viewMode === 'list' && (
         <button
           onClick={handleOpenCreate}
-          className="fixed bottom-6 right-5 z-40 px-4 py-2.5 rounded-full bg-[#2D3A32] text-white shadow-lg shadow-black/20 flex items-center gap-1.5 active:scale-95 transition-all text-xs font-medium"
+          className="fixed bottom-6 right-5 z-40 w-12 h-12 rounded-full bg-[var(--theme-primary)] hover:bg-[var(--theme-primary-hover)] text-white shadow-xl shadow-black/25 flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
+          title="记一笔"
         >
-          <Edit3 className="w-3.5 h-3.5" />
-          <span>记一笔</span>
+          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 18.5l-4 1 1-4L16.5 3.5z" />
+            <path d="M14.5 5.5l3 3" />
+            <circle cx="9" cy="14" r="0.75" fill="currentColor" />
+          </svg>
         </button>
       )}
+
+      {/* 自定义软件UI颜色弹窗 */}
+      <ThemeModal
+        isOpen={isThemeModalOpen}
+        onClose={() => setIsThemeModalOpen(false)}
+        currentTheme={currentTheme}
+        onApplyTheme={handleApplyTheme}
+      />
 
       {/* 数据备份模态窗 */}
       <BackupModal
