@@ -101,6 +101,16 @@ export const ItemDetailPage: React.FC<ItemDetailPageProps> = ({
           </div>
 
           <div className="divide-y divide-[var(--theme-border)]/35 text-xs sm:text-sm">
+            {/* 品牌/作者 放在材质之前 */}
+            <div className="py-2.5 flex items-center justify-between gap-4">
+              <span className="font-serif-sc font-bold text-xs sm:text-[13px] text-[var(--theme-primary)] shrink-0">
+                品牌/作者
+              </span>
+              <span className="text-[var(--theme-text)] text-right font-normal break-words">
+                {item.brand || '未填写'}
+              </span>
+            </div>
+
             <div className="py-2.5 flex items-center justify-between gap-4">
               <span className="font-serif-sc font-bold text-xs sm:text-[13px] text-[var(--theme-primary)] shrink-0">
                 材质
@@ -179,17 +189,19 @@ export const ItemDetailPage: React.FC<ItemDetailPageProps> = ({
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-white border border-[var(--theme-border)]/60 flex items-center justify-between">
-                <div>
-                  <div className="text-[var(--theme-text-muted)] text-[11px]">邮费</div>
-                  <div className="text-base font-bold font-mono text-[var(--theme-text)] mt-0.5">
-                    {formatCurrency(item.fullPostage)}
+              {item.fullPostage !== null && item.fullPostage !== undefined && Number(item.fullPostage) > 0 && (
+                <div className="p-3 rounded-xl bg-white border border-[var(--theme-border)]/60 flex items-center justify-between">
+                  <div>
+                    <div className="text-[var(--theme-text-muted)] text-[11px]">邮费</div>
+                    <div className="text-base font-bold font-mono text-[var(--theme-text)] mt-0.5">
+                      {formatCurrency(item.fullPostage)}
+                    </div>
+                  </div>
+                  <div className="text-[11px] text-[var(--theme-text-muted)] font-mono text-right">
+                    {item.fullPostageDate || item.fullDate || '未填写'}
                   </div>
                 </div>
-                <div className="text-[11px] text-[var(--theme-text-muted)] font-mono text-right">
-                  {item.fullPostageDate || item.fullDate || '未填写'}
-                </div>
-              </div>
+              )}
             </div>
           ) : (
             <div className="space-y-2 text-xs">
@@ -217,17 +229,19 @@ export const ItemDetailPage: React.FC<ItemDetailPageProps> = ({
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-white border border-[var(--theme-border)]/60 flex items-center justify-between">
-                <div>
-                  <div className="text-[var(--theme-text-muted)] text-[11px]">邮费</div>
-                  <div className="text-base font-bold font-mono text-[var(--theme-text)] mt-0.5">
-                    {formatCurrency(item.depositPostage)}
+              {item.depositPostage !== null && item.depositPostage !== undefined && Number(item.depositPostage) > 0 && (
+                <div className="p-3 rounded-xl bg-white border border-[var(--theme-border)]/60 flex items-center justify-between">
+                  <div>
+                    <div className="text-[var(--theme-text-muted)] text-[11px]">邮费</div>
+                    <div className="text-base font-bold font-mono text-[var(--theme-text)] mt-0.5">
+                      {formatCurrency(item.depositPostage)}
+                    </div>
+                  </div>
+                  <div className="text-[11px] text-[var(--theme-text-muted)] font-mono text-right">
+                    {item.depositPostageDate || '未填写'}
                   </div>
                 </div>
-                <div className="text-[11px] text-[var(--theme-text-muted)] font-mono text-right">
-                  {item.depositPostageDate || '未填写'}
-                </div>
-              </div>
+              )}
             </div>
           )}
 

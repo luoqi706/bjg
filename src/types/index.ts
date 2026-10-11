@@ -48,6 +48,7 @@ export interface DollItem {
   notes: string;
   
   // 娃柜专属独立信息 (只展示在娃柜，不计入真实账本)
+  brand?: string;              // 品牌/作者 (在材质之前)
   material: string;
   size: string;
   color: string;

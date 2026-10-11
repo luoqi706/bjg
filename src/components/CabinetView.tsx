@@ -82,7 +82,8 @@ export const CabinetView: React.FC<CabinetViewProps> = ({
         const kw = searchKeyword.trim().toLowerCase();
         const matchName = item.name.toLowerCase().includes(kw);
         const matchNotes = (item.notes || '').toLowerCase().includes(kw);
-        if (!matchName && !matchNotes) return false;
+        const matchBrand = (item.brand || '').toLowerCase().includes(kw);
+        if (!matchName && !matchNotes && !matchBrand) return false;
       }
       // 状态
       if (statusFilter !== 'all' && item.status !== statusFilter) {

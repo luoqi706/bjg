@@ -74,6 +74,7 @@ export const ItemFormPage: React.FC<ItemFormPageProps> = ({
   const [resaleDate, setResaleDate] = useState(today);
 
   // 娃柜信息
+  const [brand, setBrand] = useState('');
   const [material, setMaterial] = useState('');
   const [size, setSize] = useState('');
   const [color, setColor] = useState('');
@@ -97,19 +98,20 @@ export const ItemFormPage: React.FC<ItemFormPageProps> = ({
       setFullAmount(initialItem.fullAmount !== null ? String(initialItem.fullAmount) : '');
       setFullDate(initialItem.fullDate || today);
       setFullPostage(initialItem.fullPostage !== null ? String(initialItem.fullPostage) : '');
-      setFullPostageDate(initialItem.fullPostageDate || today);
+      setFullPostageDate(initialItem.fullPostageDate || (initialItem.fullPostage ? today : ''));
 
       setDepositAmount(initialItem.depositAmount !== null ? String(initialItem.depositAmount) : '');
       setDepositDate(initialItem.depositDate || today);
       setFinalAmount(initialItem.finalAmount !== null ? String(initialItem.finalAmount) : '');
       setFinalDate(initialItem.finalDate || '');
       setDepositPostage(initialItem.depositPostage !== null ? String(initialItem.depositPostage) : '');
-      setDepositPostageDate(initialItem.depositPostageDate || today);
+      setDepositPostageDate(initialItem.depositPostageDate || (initialItem.depositPostage ? today : ''));
 
       setIsResold(Boolean(initialItem.isResold));
       setResaleAmount(initialItem.resaleAmount !== null ? String(initialItem.resaleAmount) : '');
       setResaleDate(initialItem.resaleDate || today);
 
+      setBrand(initialItem.brand || '');
       setMaterial(initialItem.material || '');
       setSize(initialItem.size || '');
       setColor(initialItem.color || '');
@@ -141,6 +143,7 @@ export const ItemFormPage: React.FC<ItemFormPageProps> = ({
       setResaleAmount('');
       setResaleDate(today);
 
+      setBrand('');
       setMaterial('');
       setSize('');
       setColor('');
@@ -182,10 +185,14 @@ export const ItemFormPage: React.FC<ItemFormPageProps> = ({
 
     const now = new Date().toISOString();
     const parsedFullAmt = fullAmount ? roundToTwoDecimals(fullAmount) : null;
-    const parsedFullPost = fullPostage ? roundToTwoDecimals(fullPostage) : null;
+    const parsedFullPost = fullPostage && parseFloat(fullPostage) > 0 ? roundToTwoDecimals(fullPostage) : null;
+    const finalFullPostDate = parsedFullPost !== null ? (fullPostageDate || fullDate || today) : '';
+
     const parsedDepAmt = depositAmount ? roundToTwoDecimals(depositAmount) : null;
     const parsedFinAmt = finalAmount ? roundToTwoDecimals(finalAmount) : null;
-    const parsedDepPost = depositPostage ? roundToTwoDecimals(depositPostage) : null;
+    const parsedDepPost = depositPostage && parseFloat(depositPostage) > 0 ? roundToTwoDecimals(depositPostage) : null;
+    const finalDepPostDate = parsedDepPost !== null ? (depositPostageDate || depositDate || today) : '';
+
     const parsedResaleAmt = isResold && resaleAmount ? roundToTwoDecimals(resaleAmount) : null;
     const parsedCabinetPrice = cabinetPrice ? roundToTwoDecimals(cabinetPrice) : null;
     const parsedCabinetQty = parseInt(cabinetQuantity, 10) || 1;
@@ -201,19 +208,20 @@ export const ItemFormPage: React.FC<ItemFormPageProps> = ({
       fullAmount: parsedFullAmt,
       fullDate,
       fullPostage: parsedFullPost,
-      fullPostageDate,
+      fullPostageDate: finalFullPostDate,
 
       depositAmount: parsedDepAmt,
       depositDate,
       finalAmount: parsedFinAmt,
       finalDate,
       depositPostage: parsedDepPost,
-      depositPostageDate,
+      depositPostageDate: finalDepPostDate,
 
       isResold,
       resaleAmount: parsedResaleAmt,
       resaleDate: isResold ? resaleDate : '',
 
+      brand: brand.trim(),
       material: material.trim(),
       size: size.trim(),
       color: color.trim(),
@@ -678,6 +686,20 @@ export const ItemFormPage: React.FC<ItemFormPageProps> = ({
           <h3 className="text-sm font-semibold text-[#5B7360]">
             娃柜信息
           </h3>
+
+          {/* 品牌/作者 放在材质之前 */}
+          <div>
+            <label className="block text-xs font-medium text-[#4A5D4F] mb-1">
+              品牌/作者
+            </label>
+            <input
+              type="text"
+              value={brand}
+              onChange={(e) => setBrand(e.target.value)}
+              placeholder="例如：Souldoll / Volks / 手作作者名"
+              className="w-full px-3 py-2 rounded-xl text-xs glass-input text-[#2D3A32]"
+            />
+          </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div>
